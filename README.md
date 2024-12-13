@@ -42,42 +42,39 @@ This is a set of Vertica User Defined Functions (UDF) for basic vector algebra, 
 
 ## Examples
 
+```SQL
+select vector_init(1, 3) as value;
+ value
+--------
+ [1,1,1]
+(1 row)
 
-- work as UDTF:
-  
-  ```SQL
-  select vector_init(1, 3) as value;
-   value
-  --------
-   [1,1,1]
-  (1 row)
-  
-  select vector_init(1.0, 3) as value;
-   value
-  --------
-   [1.0,1.0,1.0]
-  (1 row)
-  
-  select vector_add(array[1.0, 2.0, 3.0], array[1.0, 2.0, 3.0]) as value;
-       value
-  ---------------
-   [2.0,4.0,6.0]
-  
-  select vector_mul(array[1.0, 2.0, 3.0], 2) as value;
-       value
-  ---------------
-   [2.0,4.0,6.0]
-  
-  select vector_sum(arry) as value
-  from (
-    select array[1.0, 2.0, 3.0] as arry
-    union all
-    select array[1.0, 2.0, 3.0] as arry
-    ) t;
-       value
-  ---------------
-   [2.0,4.0,6.0]
-  ```
+select vector_init(1.0, 3) as value;
+ value
+--------
+ [1.0,1.0,1.0]
+(1 row)
+
+select vector_add(array[1.0, 2.0, 3.0], array[1.0, 2.0, 3.0]) as value;
+     value
+---------------
+ [2.0,4.0,6.0]
+
+select vector_mul(array[1.0, 2.0, 3.0], 2) as value;
+     value
+---------------
+ [2.0,4.0,6.0]
+
+select vector_sum(arry) as value
+from (
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  ) t;
+     value
+---------------
+ [2.0,4.0,6.0]
+```
 
 ## Install, test and uninstall
 
