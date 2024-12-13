@@ -1,0 +1,38 @@
+
+AUTOMAKE_OPTIONS = foreign
+ACLOCAL_AMFLAGS = -I m4
+
+AM_CXXFLAGS = -I$(SDK)/include
+
+lib_LTLIBRARIES = vector.la
+vector_la_SOURCES = src/VectorInit.cpp src/VectorAdd.cpp src/VectorMul.cpp src/VectorSum.cpp src/Vertica.cpp
+vector_la_LDFLAGS = -module -avoid-version -shared -fPIC 
+
+
+src/Vertica.cpp:
+	cp -f $(SDK)/include/Vertica.cpp src/Vertica.cpp
+
+
+install: $(lib_LTLIBRARIES) ddl/install.sql
+	$(VSQL) -f ddl/install.sql
+
+
+uninstall: ddl/uninstall.sql
+	$(VSQL) -f ddl/uninstall.sql
+
+
+clean-local:
+	[ -f src/Vertica.cpp ] && rm -f src/Vertica.cpp || true
+	[ -f testresult.txt ] && rm -f testresult.txt || true
+
+
+# tests
+test: $(PACKAGE_LIBNAME) uninstall install test/unit.sql
+	$(VSQL) -ef test/unit.sql | tee testunit.txt
+
+perf: $(PACKAGE_LIBNAME) test/perf.sql
+	$(VSQL) -ief test/perf.sql | tee testperf.txt
+
+perf_sql: $(PACKAGE_LIBNAME) test/perf_sql.sql
+	$(VSQL) -ief test/perf_sql.sql | tee testperf_sql.txt
+
