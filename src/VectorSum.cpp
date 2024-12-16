@@ -55,13 +55,16 @@ class VectorSum : public AggregateFunction
                    BlockReader &argReader,
                    IntermediateAggs &aggs)
     {
-        //Note: use VString API except argReader.getArrayRef(0), 
-        //      Array::ArrayReader do not work for AggregateFunction yet at least before 24.4
-        const VString &otherIR = argReader.getStringRef(0);
         // Get the running IR-buffers for this aggregate group
         VString &arrayIR = aggs.getStringRef(0);
 
-        sum(arrayIR, otherIR);
+        do
+        {
+            //Note: use VString API except argReader.getArrayRef(0),
+            //      Array::ArrayReader do not work for AggregateFunction yet at least before 24.4
+            const VString &otherIR = argReader.getStringRef(0);
+            sum(arrayIR, otherIR);
+        } while(argReader.next());
     }
 
 
@@ -71,9 +74,11 @@ class VectorSum : public AggregateFunction
     {
         // Get the IR buffers for a specific aggregate group and combine it with the ones from other groups
         VString &arrayIR = aggs.getStringRef(0);
-        const VString &otherIR = aggsOther.getStringRef(0);
-
-        sum(arrayIR, otherIR);
+        do
+        {
+            const VString &otherIR = aggsOther.getStringRef(0);
+            sum(arrayIR, otherIR);
+        } while(aggsOther.next());
     }
 
 

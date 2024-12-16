@@ -86,7 +86,7 @@ from (
 
 -- unit test case of vector_sum: vector of floats
 select error_on_check_false(
-         value = array[2, 4, 6]::array[float, 3]
+         value = array[10, 20, 30]::array[float, 3]
          , 'sum of vectors of floats', 'unit test case of vector_sum: vector of floats', ''
       ) as "unit test case of vector_sum: vector of floats"
 from (
@@ -95,6 +95,96 @@ from (
   select array[1.0, 2.0, 3.0] as arry
   union all
   select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
+  union all
+  select array[1.0, 2.0, 3.0] as arry
   ) a
 ) t;
+
+-- unit test case of vector_sum: vector of floats
+-- create local temp table if not exists test_vector_tmp(
+create table if not exists test_vector_tmp(
+  id int
+  , value1 array[float, 3]
+  , value2 array[float, 3]
+  , value3 array[float, 3]
+)
+--on commit preserve rows
+order by id
+segmented by hash(id) all nodes
+;
+
+truncate table test_vector_tmp;
+
+insert into test_vector_tmp
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+union all
+select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+;
+commit;
+
+select error_on_check_false(
+         value1 = array[10, 20, 30]::array[float, 3]
+         and value2 = array[40, 50, 60]::array[float, 3]
+         and value3 = array[70, 80, 90]::array[float, 3]
+         , 'sum of vectors of floats group by key', 'unit test case of vector_sum: vector of floats', ''
+      ) as "unit test case of vector_sum: vector of floats"
+from (
+  select id
+    , vector_sum(value1) value1
+    , vector_sum(value2) value2
+    , vector_sum(value3) value3
+  from test_vector_tmp
+  group by 1
+) t
+;
 
