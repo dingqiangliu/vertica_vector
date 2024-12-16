@@ -18,19 +18,24 @@ class VectorSum : public AggregateFunction
     {
         // Initialize the IR buffers
         VString &arrayIR = aggs.getStringRef(0);
-        arrayIR.alloc(0);
+        arrayIR.alloc(arrayIR.max_size);
+
+        vint &arraySize = aggs.getIntRef(1);
+        arraySize = 0;
     }
 
-    inline void sum(VString &tgt, const VString &frm)
+    inline void sum(VString &tgt, vint &tgtSize, const VString &frm)
     {
         vfloat *tgtBuffer = reinterpret_cast<vfloat *> (tgt.data());
         const vfloat *frmBuffer = reinterpret_cast<const vfloat *> (frm.data());
+        const vsize frmLen = frm.length();
 
         int cnt = 0;
         int len = 0;
-        while((tgt.sv->slen == 0 || len < tgt.sv->slen) && (len < frm.sv->slen))
+        while((tgtSize == 0 || len < tgtSize) && (len < frmLen))
         {
-            if(tgt.sv->slen == 0)
+            //init arrayIR according to the input array
+            if(tgtSize == 0)
                 tgtBuffer[cnt] = vfloat_null;
 
             vfloat value = frmBuffer[cnt];
@@ -46,8 +51,10 @@ class VectorSum : public AggregateFunction
             len += sizeof(vfloat);
         }
 
-        if(tgt.sv->slen == 0)
-            tgt.sv->slen = len;
+        //set arraySize according to the input array
+        //TODO: how to get the exact size of input array before Array::ArrayReader workable for AggregateFunction?
+        if(tgtSize == 0)
+            tgtSize = len;
     }
 
 
@@ -57,13 +64,15 @@ class VectorSum : public AggregateFunction
     {
         // Get the running IR-buffers for this aggregate group
         VString &arrayIR = aggs.getStringRef(0);
+        vint &arraySize = aggs.getIntRef(1);
 
         do
         {
             //Note: use VString API except argReader.getArrayRef(0),
-            //      Array::ArrayReader do not work for AggregateFunction yet at least before 24.4
+            //      Array::ArrayReader does not work for AggregateFunction yet at least before 24.4
             const VString &otherIR = argReader.getStringRef(0);
-            sum(arrayIR, otherIR);
+
+            sum(arrayIR, arraySize, otherIR);
         } while(argReader.next());
     }
 
@@ -74,10 +83,11 @@ class VectorSum : public AggregateFunction
     {
         // Get the IR buffers for a specific aggregate group and combine it with the ones from other groups
         VString &arrayIR = aggs.getStringRef(0);
+        vint &arraySize = aggs.getIntRef(1);
         do
         {
             const VString &otherIR = aggsOther.getStringRef(0);
-            sum(arrayIR, otherIR);
+            sum(arrayIR, arraySize, otherIR);
         } while(aggsOther.next());
     }
 
@@ -87,9 +97,10 @@ class VectorSum : public AggregateFunction
                    IntermediateAggs &aggs)
     {
         const VString &arrayIR = aggs.getStringRef(0);
-        VString &resultBuffer = resWriter.getStringRef();
+        vint &arraySize = aggs.getIntRef(1);
 
-        resultBuffer.copy(arrayIR.data(), arrayIR.sv->slen);
+        VString &resultBuffer = resWriter.getStringRef();
+        resultBuffer.copy(arrayIR.data(), arraySize);
     }
 
     using AggregateFunction::terminate;
@@ -130,7 +141,12 @@ class VectorSumFactory : public AggregateFunctionFactory
                               const SizedColumnTypes &inputTypes,
                               SizedColumnTypes &intermediateTypeMetaData)
     {
+        // array size according to the definition of the input column,
+        // Note, it may be wider than real input values
         intermediateTypeMetaData.addArg(inputTypes.getColumnType(0), "buffer");
+
+        // real output vector size
+        intermediateTypeMetaData.addInt();
     }
 };
 

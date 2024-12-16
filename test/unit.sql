@@ -115,14 +115,14 @@ from (
 ) t;
 
 -- unit test case of vector_sum: vector of floats
--- create local temp table if not exists test_vector_tmp(
-create table if not exists test_vector_tmp(
+create local temp table if not exists test_vector_tmp(
   id int
-  , value1 array[float, 3]
-  , value2 array[float, 3]
-  , value3 array[float, 3]
+  , key int
+  , value1 array[float, 10]
+  , value2 array[float, 10]
+  , value3 array[float, 10]
 )
---on commit preserve rows
+on commit preserve rows
 order by id
 segmented by hash(id) all nodes
 ;
@@ -130,45 +130,45 @@ segmented by hash(id) all nodes
 truncate table test_vector_tmp;
 
 insert into test_vector_tmp
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 1, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 2, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 3, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 4, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 5, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 6, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 7, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 8, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 9, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 10, 1, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 11, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 12, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 13, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 14, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 14, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 16, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 17, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 18, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 19, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 union all
-select 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
+select 20, 2, array[1.0, 2.0, 3.0], array[4.0, 5.0, 6.0], array[7.0, 8.0, 9.0]
 ;
 commit;
 
@@ -176,13 +176,13 @@ select error_on_check_false(
          value1 = array[10, 20, 30]::array[float, 3]
          and value2 = array[40, 50, 60]::array[float, 3]
          and value3 = array[70, 80, 90]::array[float, 3]
-         , 'sum of vectors of floats group by key', 'unit test case of vector_sum: vector of floats', ''
+         , 'sum of vectors of floats group by key without sortness and longer array definition', 'unit test case of vector_sum: vector of floats', ''
       ) as "unit test case of vector_sum: vector of floats"
 from (
-  select id
-    , vector_sum(value1) value1
-    , vector_sum(value2) value2
-    , vector_sum(value3) value3
+  select key
+    , vector_sum(value1::array[float, 3]) value1 -- TODO: input array should be cast to expecting size since the array definition is wider
+    , vector_sum(value2::array[float, 3]) value2
+    , vector_sum(value3::array[float, 3]) value3
   from test_vector_tmp
   group by 1
 ) t
